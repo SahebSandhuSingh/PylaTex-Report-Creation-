@@ -1,0 +1,12 @@
+# Python Requirements for Beam Force Analysis Report Generator
+# Installation: pip install -r requirements.txt
+
+# Data processing
+pandas>=1.3.0
+openpyxl>=3.0.0
+numpy>=1.20.0
+scipy>=1.7.0
+
+# PDF generation with LaTeX
+pylatex>=1.4.0
+
