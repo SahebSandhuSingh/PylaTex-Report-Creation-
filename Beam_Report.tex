@@ -32,15 +32,6 @@ subjected to various load conditions. The analysis includes the calculation and 
 visualization of shear force and bending moment distributions along the beam length.%
 \vspace{0.2cm}%
 \\%
-
-
-\begin{figure}[htbp]%
-\centering%
-\includegraphics[width=0.7\textwidth]{beam_diagram.png}%
-\caption{Simply Supported Beam Configuration}%
-\end{figure}
-
-%
 \vspace{0.2cm}%
 The primary objectives of this analysis are:%
 \subsection*{Objectives}%
@@ -382,6 +373,12 @@ shear stress is maximum and for designing adequate shear reinforcement.%
 (15.000,45.000)
 };
 
+% MAX annotation
+\node[anchor=south east, font=\footnotesize, text=black, xshift=-3pt, yshift=2pt] at (axis cs:15.000,45.000) {MAX: 45.00 kN};
+
+% MIN annotation
+\node[anchor=south west, font=\footnotesize, text=black, xshift=3pt, yshift=2pt] at (axis cs:0.000,-45.000) {MIN: -45.00 kN};
+
 \end{axis}
 \end{tikzpicture}
 \caption{Shear Force Diagram (SFD) - Contour Visualization}
@@ -636,6 +633,12 @@ designing the beam cross{-}section to resist flexural loads safely.%
 (13.500,60.750)
 (15.000,0.000)
 };
+
+% MAX annotation
+\node[anchor=south east, font=\footnotesize, text=black, xshift=-3pt, yshift=2pt] at (axis cs:7.500,168.750) {MAX: 168.75 kN$\cdot$m};
+
+% MIN annotation
+\node[anchor=south west, font=\footnotesize, text=black, xshift=3pt, yshift=2pt] at (axis cs:0.000,0.000) {MIN: 0.00 kN$\cdot$m};
 
 \end{axis}
 \end{tikzpicture}

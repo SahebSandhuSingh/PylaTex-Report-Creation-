@@ -11,19 +11,7 @@ from pylatex.utils import bold
 
 
 def read_excel_data(excel_path):
-    """
-    Read beam force data from Excel file.
-    
-    Args:
-        excel_path (str): Path to the Excel file containing beam force data.
-        
-    Returns:
-        pd.DataFrame: DataFrame containing the force data.
-        
-    Raises:
-        FileNotFoundError: If Excel file does not exist.
-        Exception: If file cannot be read or is malformed.
-    """
+    """Reading beam force data from Excel file."""
     try:
         excel_file = Path(excel_path)
         if not excel_file.exists():
@@ -43,13 +31,7 @@ def read_excel_data(excel_path):
 
 
 def create_force_table(doc, df):
-    """
-    Create a LaTeX Tabular table from the beam force DataFrame.
-    
-    Args:
-        doc: PyLaTeX Document object.
-        df (pd.DataFrame): DataFrame containing force data.
-    """
+    """Creating a LaTeX Tabular table from the beam force DataFrame."""
     with doc.create(Section('Input Data')):
         doc.append('The following table presents the input force data extracted from the Excel file.')
         doc.append(NoEscape(r'\vspace{0.3cm}'))
@@ -81,18 +63,7 @@ def create_force_table(doc, df):
 
 
 def calculate_shear_bending_moments(df):
-    """
-    Extract shear force and bending moment arrays from DataFrame.
-    
-    Args:
-        df (pd.DataFrame): DataFrame with force data containing columns:
-                          - Position/x: beam positions (m)
-                          - Shear force: shear force values (kN) 
-                          - Bending Moment: bending moment values (kN·m)
-        
-    Returns:
-        tuple: (positions, shear_forces, bending_moments)
-    """
+    """Extracting shear force and bending moment arrays from DataFrame."""
     # Identify position column
     if 'x' in df.columns:
         positions = df['x'].values
@@ -125,16 +96,7 @@ def calculate_shear_bending_moments(df):
 
 
 def generate_sfd_plot(positions, shear_forces):
-    """
-    Generate pgfplots code for Shear Force Diagram with colored fill between curve and zero.
-    
-    Args:
-        positions (np.ndarray): Array of beam positions (m).
-        shear_forces (np.ndarray): Array of shear force values (kN).
-        
-    Returns:
-        str: pgfplots LaTeX code for the SFD plot.
-    """
+    """Generating pgfplots code for Shear Force Diagram with colored fill between curve and zero."""
     from scipy.interpolate import interp1d
     
     # Invert shear forces to match required trajectory direction
@@ -143,6 +105,10 @@ def generate_sfd_plot(positions, shear_forces):
     # Calculate value range
     sf_min = shear_forces.min()
     sf_max = shear_forces.max()
+    sf_min_idx = np.argmin(shear_forces)
+    sf_max_idx = np.argmax(shear_forces)
+    sf_min_pos = positions[sf_min_idx]
+    sf_max_pos = positions[sf_max_idx]
     
     # High-resolution interpolation for smooth gradient (200 points)
     x_high_res = np.linspace(positions.min(), positions.max(), 200)
@@ -233,6 +199,12 @@ def generate_sfd_plot(positions, shear_forces):
 """ + trajectory_coords + r"""
 };
 
+% MAX annotation
+\node[anchor=south east, font=\footnotesize, text=black, xshift=-3pt, yshift=2pt] at (axis cs:""" + f"{sf_max_pos:.3f},{sf_max:.3f}" + r""") {MAX: """ + f"{sf_max:.2f}" + r""" kN};
+
+% MIN annotation
+\node[anchor=south west, font=\footnotesize, text=black, xshift=3pt, yshift=2pt] at (axis cs:""" + f"{sf_min_pos:.3f},{sf_min:.3f}" + r""") {MIN: """ + f"{sf_min:.2f}" + r""" kN};
+
 \end{axis}
 \end{tikzpicture}
 \caption{Shear Force Diagram (SFD) - Contour Visualization}
@@ -260,6 +232,10 @@ def generate_bmd_plot(positions, bending_moments):
     bm_min = bending_moments.min()
     bm_max = bending_moments.max()
     bm_abs_max = max(abs(bm_min), abs(bm_max))
+    bm_min_idx = np.argmin(bending_moments)
+    bm_max_idx = np.argmax(bending_moments)
+    bm_min_pos = positions[bm_min_idx]
+    bm_max_pos = positions[bm_max_idx]
     
     # High-resolution interpolation for smooth gradient (200 points)
     x_high_res = np.linspace(positions.min(), positions.max(), 200)
@@ -344,6 +320,12 @@ def generate_bmd_plot(positions, bending_moments):
 ] coordinates {
 """ + trajectory_coords + r"""
 };
+
+% MAX annotation
+\node[anchor=south east, font=\footnotesize, text=black, xshift=-3pt, yshift=2pt] at (axis cs:""" + f"{bm_max_pos:.3f},{bm_max:.3f}" + r""") {MAX: """ + f"{bm_max:.2f}" + r""" kN$\cdot$m};
+
+% MIN annotation
+\node[anchor=south west, font=\footnotesize, text=black, xshift=3pt, yshift=2pt] at (axis cs:""" + f"{bm_min_pos:.3f},{bm_min:.3f}" + r""") {MIN: """ + f"{bm_min:.2f}" + r""" kN$\cdot$m};
 
 \end{axis}
 \end{tikzpicture}
